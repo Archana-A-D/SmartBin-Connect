@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | SmartWaste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================
+       SmartWaste — Register Page (self-contained)
+       ============================================= */
+
+    :root {
+      --g50:  #f0fdf4; --g100: #dcfce7; --g200: #bbf7d0;
+      --g300: #86efac; --g400: #4ade80; --g500: #22c55e;
+      --g600: #16a34a; --g700: #15803d; --g800: #166534;
+      --g900: #14532d; --g950: #052e16;
+
+      --ink:   #0a1f0d;
+      --muted: #4b7a57;
+      --ghost: #a3c4a9;
+      --white: #ffffff;
+      --error: #dc2626;
+
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --ease: cubic-bezier(.4,0,.2,1);
+      --bounce: cubic-bezier(.34,1.56,.64,1);
+      --dur: .22s;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+
+    body {
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--g950);
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { font-family: var(--font); cursor: pointer; }
+
+    /* ── Background layers ─────────────────── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% -5%,  rgba(34,197,94,.32) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 45% at 95% 95%,  rgba(22,163,74,.2)  0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 0%  80%,  rgba(20,83,45,.5)   0%, transparent 55%),
+        linear-gradient(160deg, #071c0b 0%, var(--g950) 50%, #030d05 100%);
+    }
+    .bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(74,222,128,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,222,128,.05) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed; border-radius: 50%;
+      filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: orbDrift ease-in-out infinite alternate;
+    }
+    .orb1 { width:500px;height:500px;top:-200px;left:-100px; background:rgba(34,197,94,.1); animation-duration:10s; }
+    .orb2 { width:380px;height:380px;bottom:-120px;right:-80px;background:rgba(22,163,74,.09);animation-duration:13s;animation-delay:3s; }
+    .orb3 { width:260px;height:260px;top:45%;left:55%;  background:rgba(74,222,128,.07);animation-duration:8s; animation-delay:1s; }
+    @keyframes orbDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(20px,30px) scale(1.08); }
+    }
+
+    /* Rising particles */
+    .ptcl {
+      position: fixed; bottom: -10px; border-radius: 50%;
+      background: rgba(74,222,128,.16); pointer-events: none; z-index: 0;
+      animation: rise linear infinite;
+    }
+    @keyframes rise {
+      0%   { transform:translateY(0) scale(1); opacity:0; }
+      10%  { opacity:.9; }
+      90%  { opacity:.2; }
+      100% { transform:translateY(-105vh) scale(.2); opacity:0; }
+    }
+
+    /* ── Navbar ────────────────────────────── */
+    .navbar {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 4%;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(12px);
+      background: rgba(5,46,22,.3);
+    }
+    .brand {
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .brand-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--g500), var(--g800));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 14px rgba(34,197,94,.35);
+    }
+    .brand-name {
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--white); letter-spacing: -.02em;
+    }
+    .login-nav-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .8rem; font-weight: 500;
+      color: rgba(255,255,255,.6);
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: .42rem .95rem; border-radius: 100px;
+      transition: all var(--dur);
+    }
+    .login-nav-link:hover { color: var(--g300); background: rgba(255,255,255,.13); }
+
+    /* ── Main / form area ──────────────────── */
+    .main {
+      position: relative; z-index: 1;
+      flex: 1;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    .form-panel {
+      width: 100%; max-width: 520px;
+      animation: panelIn .55s var(--ease) both;
+    }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Badge */
+    .portal-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-size: .7rem; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--g400);
+      background: rgba(74,222,128,.1);
+      border: 1px solid rgba(74,222,128,.22);
+      padding: .3rem .85rem; border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--g400); box-shadow: 0 0 7px var(--g400);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+    .form-title {
+      font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+      font-weight: 800; color: var(--white);
+      letter-spacing: -.04em; line-height: 1.1;
+      margin-bottom: .45rem;
+    }
+    .form-sub {
+      font-size: .88rem; color: rgba(255,255,255,.45);
+      margin-bottom: 2rem; font-weight: 400; line-height: 1.6;
+    }
+
+    /* ── Step indicator ────────────────────── */
+    .steps {
+      display: flex; align-items: center; gap: .5rem;
+      margin-bottom: 1.8rem;
+    }
+    .step {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .74rem; font-weight: 600;
+      color: rgba(255,255,255,.3);
+      transition: color var(--dur);
+    }
+    .step.active { color: var(--g300); }
+    .step.done   { color: var(--g500); }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700;
+      background: rgba(255,255,255,.08);
+      border: 1.5px solid rgba(255,255,255,.15);
+      transition: all var(--dur) var(--bounce);
+    }
+    .step.active .step-num { background: var(--g600); border-color: var(--g400); color: #fff; }
+    .step.done   .step-num { background: var(--g500); border-color: var(--g500); color: #fff; }
+    .step-line {
+      flex: 1; height: 1.5px;
+      background: rgba(255,255,255,.1);
+      border-radius: 2px; position: relative; overflow: hidden;
+    }
+    .step-line.done::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--g500);
+    }
+
+    /* ── Form card ─────────────────────────── */
+    .reg-form {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+
+    /* Form section label */
+    .form-section-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.35);
+      margin-top: .4rem; margin-bottom: -.2rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .form-section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,.08);
+    }
+
+    /* Two-column row */
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .9rem;
+    }
+
+    /* Individual field */
+    .field { display: flex; flex-direction: column; gap: .38rem; }
+
+    .field label {
+      font-size: .74rem; font-weight: 600;
+      color: rgba(255,255,255,.55); letter-spacing: .025em;
+    }
+
+    /* Input wrap */
+    .iw {
+      position: relative; display: flex; align-items: center;
+      background: rgba(255,255,255,.06);
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 11px;
+      transition: border-color var(--dur), box-shadow var(--dur), background var(--dur);
+      overflow: hidden;
+    }
+    .iw:hover:not(.focused):not(.err) {
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.09);
+    }
+    .iw.focused {
+      border-color: var(--g500);
+      background: rgba(34,197,94,.07);
+      box-shadow: 0 0 0 3.5px rgba(34,197,94,.18), 0 4px 20px rgba(0,0,0,.2);
+    }
+    .iw.err {
+      border-color: #f87171;
+      background: rgba(248,113,113,.07);
+      box-shadow: 0 0 0 3px rgba(248,113,113,.15);
+    }
+    .iw.valid {
+      border-color: var(--g500);
+    }
+
+    /* Icon prefix */
+    .iw-icon {
+      padding: 0 .55rem 0 .9rem;
+      display: flex; align-items: center;
+      color: rgba(255,255,255,.2); flex-shrink: 0;
+      pointer-events: none; transition: color var(--dur);
+    }
+    .iw-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .iw.focused .iw-icon { color: var(--g400); }
+    .iw.err     .iw-icon { color: #f87171; }
+    .iw.valid   .iw-icon { color: var(--g400); }
+
+    .iw input, .iw textarea, .iw select {
+      flex: 1; border: none; background: transparent;
+      font-family: var(--font); font-size: .9rem; color: var(--white);
+      padding: .8rem .6rem .8rem 0; outline: none; width: 100%;
+      caret-color: var(--g400);
+    }
+    .iw textarea { resize: none; padding-top: .8rem; }
+    .iw input::placeholder,
+    .iw textarea::placeholder { color: rgba(255,255,255,.22); font-size: .85rem; }
+    .iw select { appearance: none; cursor: pointer; }
+    .iw select option { background: var(--g900); color: var(--white); }
+
+    /* Autofill override */
+    .iw input:-webkit-autofill,
+    .iw input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px rgba(5,46,22,.95) inset;
+      -webkit-text-fill-color: var(--white);
+      caret-color: var(--white);
+    }
+
+    /* Select arrow */
+    .select-wrap { position: relative; }
+    .select-arrow {
+      position: absolute; right: .9rem; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; color: rgba(255,255,255,.3);
+    }
+    .select-arrow svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+
+    /* Validation check icon */
+    .valid-icon {
+      padding: 0 .8rem 0 .4rem;
+      color: var(--g400); flex-shrink: 0;
+      opacity: 0; transition: opacity var(--dur);
+    }
+    .valid-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .iw.valid .valid-icon { opacity: 1; }
+
+    /* Eye toggle */
+    .eye-btn {
+      background: none; border: none;
+      padding: .5rem .8rem;
+      display: flex; align-items: center;
+      color: rgba(255,255,255,.25); flex-shrink: 0;
+      transition: color var(--dur);
+    }
+    .eye-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; display: block; }
+    .eye-btn .eye-off { display: none; }
+    .eye-btn.on .eye-on  { display: none; }
+    .eye-btn.on .eye-off { display: block; }
+    .eye-btn:hover { color: var(--g400); }
+    .eye-btn.on    { color: var(--g400); }
+
+    /* Field error message */
+    .field-err {
+      font-size: .71rem; color: #fca5a5;
+      font-weight: 500; display: none;
+      align-items: center; gap: .3rem;
+      animation: errIn .2s var(--ease);
+    }
+    .field-err.show { display: flex; }
+    .field-err svg { width: 11px; height: 11px; stroke: currentColor; fill: none; flex-shrink: 0; }
+    @keyframes errIn { from{opacity:0;transform:translateY(-3px)} to{opacity:1;transform:none} }
+
+    /* Password strength bar */
+    .pw-strength { margin-top: .4rem; }
+    .pw-strength-bar {
+      height: 3px; border-radius: 2px;
+      background: rgba(255,255,255,.1);
+      overflow: hidden; margin-bottom: .28rem;
+    }
+    .pw-strength-fill {
+      height: 100%; width: 0%; border-radius: 2px;
+      transition: width .4s var(--ease), background .4s;
+    }
+    .pw-strength-label { font-size: .68rem; color: rgba(255,255,255,.3); font-weight: 500; }
+
+    /* Terms */
+    .terms-row { display: flex; align-items: flex-start; gap: .55rem; margin-top: .3rem; }
+    .chk-lbl {
+      display: flex; align-items: flex-start; gap: .55rem;
+      font-size: .8rem; color: rgba(255,255,255,.5);
+      cursor: pointer; user-select: none; font-weight: 400; line-height: 1.5;
+    }
+    .chk-lbl input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .chkbox {
+      width: 17px; height: 17px; border-radius: 5px; flex-shrink: 0; margin-top: 2px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--dur) var(--bounce);
+    }
+    .chk-lbl input:checked ~ .chkbox {
+      background: var(--g600); border-color: var(--g500);
+      transform: scale(1.1); box-shadow: 0 2px 10px rgba(34,197,94,.35);
+    }
+    .chkbox::after {
+      content: ''; width: 9px; height: 5px;
+      border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+      transform: rotate(-45deg) translateY(-1px); opacity: 0; transition: opacity .15s;
+    }
+    .chk-lbl input:checked ~ .chkbox::after { opacity: 1; }
+    .chk-lbl a { color: var(--g400); font-weight: 600; }
+    .chk-lbl a:hover { color: var(--g300); }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%; margin-top: .4rem;
+      display: flex; align-items: center; justify-content: center; gap: .55rem;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, var(--g500), var(--g700));
+      color: var(--white); font-family: var(--font);
+      font-size: .95rem; font-weight: 700; letter-spacing: .01em;
+      border: none; border-radius: 12px;
+      box-shadow: 0 6px 28px rgba(22,163,74,.4), 0 1px 0 rgba(255,255,255,.12) inset;
+      transition: transform var(--dur) var(--bounce), box-shadow var(--dur), opacity var(--dur);
+      position: relative; overflow: hidden;
+    }
+    .submit-btn::before {
+      content: ''; position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+      transition: left .6s var(--ease);
+    }
+    .submit-btn:hover::before { left: 160%; }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(22,163,74,.55), 0 1px 0 rgba(255,255,255,.12) inset;
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn.loading { opacity: .7; pointer-events: none; }
+    .submit-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; transition: transform var(--dur); }
+    .submit-btn:hover svg { transform: translateX(4px); }
+
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; display: none;
+    }
+    .submit-btn.loading .spinner { display: block; }
+    .submit-btn.loading .btn-lbl,
+    .submit-btn.loading .btn-ico { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: .75rem;
+      margin: 1.3rem 0 .8rem;
+      color: rgba(255,255,255,.18); font-size: .74rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.1);
+    }
+
+    /* Login link */
+    .login-row {
+      text-align: center; font-size: .86rem; color: rgba(255,255,255,.45);
+      margin-bottom: .9rem;
+    }
+    .login-row a { color: var(--g400); font-weight: 700; transition: color var(--dur); }
+    .login-row a:hover { color: var(--g300); }
+
+    /* Secure note */
+    .secure-note {
+      display: flex; align-items: center; justify-content: center; gap: .4rem;
+      font-size: .7rem; color: rgba(255,255,255,.2); margin-top: 1.2rem;
+    }
+    .secure-note svg { width: 11px; height: 11px; stroke: var(--g700); fill: none; }
+
+    /* ── Responsive ───────────────────────── */
+    @media (max-width: 520px) {
+      .main { padding: 1.8rem .9rem 3rem; }
+      .navbar { padding: 1rem 5%; }
+      .form-title { font-size: 1.85rem; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 380px) {
+      .form-title { font-size: 1.6rem; }
+      .steps { gap: .3rem; }
+      .step span { display: none; }
+    }
+    @media (max-height: 600px) and (orientation: landscape) {
+      .main { padding: 1.2rem .9rem 2rem; }
+      .reg-form { gap: .75rem; }
+      .form-sub { margin-bottom: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BG -->
+  <div class="bg"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="ptcl" style="left:8%;  width:5px;height:5px;animation-duration:14s;animation-delay:0s;"></div>
+  <div class="ptcl" style="left:25%; width:3px;height:3px;animation-duration:18s;animation-delay:2s;"></div>
+  <div class="ptcl" style="left:55%; width:6px;height:6px;animation-duration:12s;animation-delay:5s;"></div>
+  <div class="ptcl" style="left:75%; width:4px;height:4px;animation-duration:16s;animation-delay:1s;"></div>
+  <div class="ptcl" style="left:90%; width:3px;height:3px;animation-duration:20s;animation-delay:7s;"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <div class="brand-icon">♻</div>
+      <span class="brand-name">SmartBin Connect</span>
+    </a>
+    <a href="login.html" class="login-nav-link">Already have an account? Sign in →</a>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="form-panel">
+
+      <div class="portal-badge">
+        <span class="badge-dot"></span>
+        Create Account
+      </div>
+
+      <h1 class="form-title">Join SmartWaste 🌿</h1>
+      <p class="form-sub">Create your account and start requesting on-demand waste pickups.</p>
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step active" id="step1">
+          <span class="step-num">1</span>
+          <span>Personal</span>
+        </div>
+        <div class="step-line" id="line1"></div>
+        <div class="step" id="step2">
+          <span class="step-num">2</span>
+          <span>Location</span>
+        </div>
+        <div class="step-line" id="line2"></div>
+        <div class="step" id="step3">
+          <span class="step-num">3</span>
+          <span>Security</span>
+        </div>
+      </div>
+
+      <!-- Registration form -->
+      <form class="reg-form" id="regForm" action="backend/register.php" method="POST" novalidate>
+
+        <!-- PERSONAL INFO -->
+        <div class="form-section-label">Personal Information</div>
+
+        <div class="field">
+          <label for="name">Full Name</label>
+          <div class="iw" id="iw-name">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <input type="text" id="name" name="name"
+                   placeholder="Enter your full name"
+                   autocomplete="name" required>
+            <span class="valid-icon">
+              <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+          </div>
+          <div class="field-err" id="err-name">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter your full name.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <div class="iw" id="iw-email">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <input type="email" id="email" name="email"
+                   placeholder="you@example.com"
+                   autocomplete="email" inputmode="email" required>
+            <span class="valid-icon">
+              <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+          </div>
+          <div class="field-err" id="err-email">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Enter a valid email address.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <div class="iw" id="iw-phone">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17z"/>
+              </svg>
+            </span>
+            <input type="tel" id="phone" name="phone"
+                   placeholder="+91 98765 43210"
+                   autocomplete="tel" inputmode="tel" required>
+            <span class="valid-icon">
+              <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+          </div>
+          <div class="field-err" id="err-phone">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Enter a valid phone number (min 10 digits).
+          </div>
+        </div>
+
+        <!-- LOCATION -->
+        <div class="form-section-label">Location Details</div>
+
+        <div class="field">
+          <label for="address">Address</label>
+          <div class="iw" id="iw-address">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </span>
+            <textarea id="address" name="address"
+                      placeholder="Enter your full address…"
+                      rows="2" required></textarea>
+          </div>
+          <div class="field-err" id="err-address">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please enter your address.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="ward">Ward Number</label>
+          <div class="iw select-wrap" id="iw-ward">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            </span>
+            <select id="ward" name="ward" required>
+              <option value="">Select your ward…</option>
+              <option value="1">Ward 1</option>
+              <option value="2">Ward 2</option>
+              <option value="3">Ward 3</option>
+              <option value="4">Ward 4</option>
+              <option value="5">Ward 5</option>
+              <option value="6">Ward 6</option>
+              <option value="7">Ward 7</option>
+              <option value="8">Ward 8</option>
+              <option value="9">Ward 9</option>
+              <option value="10">Ward 10</option>
+            </select>
+            <span class="select-arrow">
+              <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </span>
+          </div>
+          <div class="field-err" id="err-ward">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Please select your ward.
+          </div>
+        </div>
+
+        <!-- SECURITY -->
+        <div class="form-section-label">Set Password</div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="iw" id="iw-password">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="password" name="password"
+                   placeholder="Min. 8 characters"
+                   autocomplete="new-password" required>
+            <button type="button" class="eye-btn" id="eye1" aria-label="Toggle password">
+              <svg class="eye-on"  viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <!-- Strength bar -->
+          <div class="pw-strength" id="pwStrength" style="display:none">
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="pwFill"></div>
+            </div>
+            <span class="pw-strength-label" id="pwLabel">Weak</span>
+          </div>
+          <div class="field-err" id="err-password">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Password must be at least 8 characters.
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="confirm_password">Confirm Password</label>
+          <div class="iw" id="iw-confirm">
+            <span class="iw-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </span>
+            <input type="password" id="confirm_password" name="confirm_password"
+                   placeholder="Re-enter your password"
+                   autocomplete="new-password" required>
+            <button type="button" class="eye-btn" id="eye2" aria-label="Toggle confirm password">
+              <svg class="eye-on"  viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-off" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+            <span class="valid-icon">
+              <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </span>
+          </div>
+          <div class="field-err" id="err-confirm">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Passwords do not match.
+          </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="terms-row">
+          <label class="chk-lbl">
+            <input type="checkbox" id="terms" name="terms" required>
+            <span class="chkbox"></span>
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+        <div class="field-err" id="err-terms" style="margin-top:-.4rem">
+          <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please accept the terms to continue.
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <div class="spinner"></div>
+          <span class="btn-lbl">Create My Account</span>
+          <svg class="btn-ico" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+
+      </form>
+
+      <div class="divider"><span>Already registered?</span></div>
+
+      <p class="login-row">
+        <a href="login.html">Sign in to your account →</a>
+      </p>
+
+      <p class="secure-note">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        256-bit SSL encryption · Your data is safe
+      </p>
+
+    </div>
+  </main>
+
+  <script>
+    /* ── Focus / blur on input wrappers ──────── */
+    document.querySelectorAll('.iw input, .iw textarea, .iw select').forEach(inp => {
+      const w = inp.closest('.iw');
+      inp.addEventListener('focus', () => w.classList.add('focused'));
+      inp.addEventListener('blur',  () => w.classList.remove('focused'));
+    });
+
+    /* ── Password eye toggles ─────────────────── */
+    function initEye(btnId, inputId) {
+      const btn = document.getElementById(btnId);
+      const inp = document.getElementById(inputId);
+      btn.addEventListener('click', () => {
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        btn.classList.toggle('on', show);
+        inp.focus();
+      });
+    }
+    initEye('eye1', 'password');
+    initEye('eye2', 'confirm_password');
+
+    /* ── Password strength ───────────────────── */
+    const pwInp     = document.getElementById('password');
+    const pwStrWrap = document.getElementById('pwStrength');
+    const pwFill    = document.getElementById('pwFill');
+    const pwLabel   = document.getElementById('pwLabel');
+
+    pwInp.addEventListener('input', () => {
+      const v = pwInp.value;
+      if (!v) { pwStrWrap.style.display = 'none'; return; }
+      pwStrWrap.style.display = 'block';
+
+      let score = 0;
+      if (v.length >= 8)               score++;
+      if (v.length >= 12)              score++;
+      if (/[A-Z]/.test(v))             score++;
+      if (/[0-9]/.test(v))             score++;
+      if (/[^A-Za-z0-9]/.test(v))      score++;
+
+      const levels = [
+        { pct:'20%', color:'#ef4444', label:'Very Weak' },
+        { pct:'40%', color:'#f97316', label:'Weak'      },
+        { pct:'60%', color:'#eab308', label:'Fair'      },
+        { pct:'80%', color:'#84cc16', label:'Strong'    },
+        { pct:'100%',color:'#22c55e', label:'Very Strong'},
+      ];
+      const lv = levels[Math.max(0, score - 1)];
+      pwFill.style.width    = lv.pct;
+      pwFill.style.background = lv.color;
+      pwLabel.textContent   = lv.label;
+      pwLabel.style.color   = lv.color;
+    });
+
+    /* ── Live validation helpers ──────────────── */
+    const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const isPhone = v => v.replace(/\D/g,'').length >= 10;
+
+    function setValid(iwId, errId, valid) {
+      const iw  = document.getElementById(iwId);
+      const err = document.getElementById(errId);
+      iw.classList.toggle('valid', valid);
+      iw.classList.toggle('err',  !valid);
+      err.classList.toggle('show', !valid);
+    }
+    function clearState(iwId, errId) {
+      const iw  = document.getElementById(iwId);
+      const err = document.getElementById(errId);
+      iw.classList.remove('valid','err');
+      err.classList.remove('show');
+    }
+
+    /* Live clear on input */
+    document.getElementById('name').addEventListener('input', e => {
+      if (e.target.value.trim().length >= 2) clearState('iw-name','err-name');
+    });
+    document.getElementById('email').addEventListener('input', e => {
+      if (isEmail(e.target.value)) clearState('iw-email','err-email');
+    });
+    document.getElementById('phone').addEventListener('input', e => {
+      if (isPhone(e.target.value)) clearState('iw-phone','err-phone');
+    });
+    document.getElementById('address').addEventListener('input', e => {
+      if (e.target.value.trim().length >= 5) clearState('iw-address','err-address');
+    });
+    document.getElementById('ward').addEventListener('change', e => {
+      if (e.target.value) clearState('iw-ward','err-ward');
+    });
+    document.getElementById('password').addEventListener('input', e => {
+      if (e.target.value.length >= 8) clearState('iw-password','err-password');
+    });
+    document.getElementById('confirm_password').addEventListener('input', e => {
+      const pw = document.getElementById('password').value;
+      if (e.target.value === pw && pw.length > 0) clearState('iw-confirm','err-confirm');
+    });
+
+    /* ── Step indicator update ──────────────── */
+    function updateSteps(active) {
+      // active: 1,2,3
+      for (let i = 1; i <= 3; i++) {
+        const s = document.getElementById('step' + i);
+        s.classList.toggle('active', i === active);
+        s.classList.toggle('done',   i < active);
+      }
+      for (let i = 1; i <= 2; i++) {
+        const l = document.getElementById('line' + i);
+        l.classList.toggle('done', i < active);
+      }
+    }
+
+    // Rough step tracking based on focus
+    ['name','email','phone'].forEach(id =>
+      document.getElementById(id).addEventListener('focus', () => updateSteps(1))
+    );
+    ['address','ward'].forEach(id =>
+      document.getElementById(id).addEventListener('focus', () => updateSteps(2))
+    );
+    ['password','confirm_password'].forEach(id =>
+      document.getElementById(id).addEventListener('focus', () => updateSteps(3))
+    );
+
+    /* ── Form submit + validation ────────────── */
+    const form = document.getElementById('regForm');
+    const btn  = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      let ok = true;
+
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const phone   = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const ward    = document.getElementById('ward').value;
+      const pw      = document.getElementById('password').value;
+      const cpw     = document.getElementById('confirm_password').value;
+      const terms   = document.getElementById('terms').checked;
+
+      if (name.length < 2)   { setValid('iw-name',    'err-name',    false); ok = false; }
+      if (!isEmail(email))    { setValid('iw-email',   'err-email',   false); ok = false; }
+      if (!isPhone(phone))    { setValid('iw-phone',   'err-phone',   false); ok = false; }
+      if (address.length < 5) { setValid('iw-address', 'err-address', false); ok = false; }
+      if (!ward)              { setValid('iw-ward',    'err-ward',    false); ok = false; }
+      if (pw.length < 8)      { setValid('iw-password','err-password',false); ok = false; }
+      if (cpw !== pw || !pw)  { setValid('iw-confirm', 'err-confirm', false); ok = false; }
+
+      const termsErr = document.getElementById('err-terms');
+      if (!terms) { termsErr.classList.add('show'); ok = false; }
+      else          termsErr.classList.remove('show');
+
+      if (!ok) {
+        // Scroll to first error
+        const firstErr = form.querySelector('.iw.err');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // All valid — submit
+      btn.classList.add('loading');
+      form.submit();
+    });
+  </script>
+
+</body>
+</html>

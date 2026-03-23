@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login | SmartWaste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --g300: #86efac;
+      --g400: #4ade80;
+      --g500: #22c55e;
+      --g600: #16a34a;
+      --g700: #15803d;
+      --g800: #166534;
+      --g900: #14532d;
+      --g950: #052e16;
+      --white: #ffffff;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --ease: cubic-bezier(.4,0,.2,1);
+      --bounce: cubic-bezier(.34,1.56,.64,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(145deg, #071c0b 0%, var(--g950) 40%, #030d05 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── ANIMATED BG ───────────────────────── */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% -5%,  rgba(34,197,94,.35) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 45% at 90% 90%,  rgba(22,163,74,.22) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 5%  75%,  rgba(20,83,45,.5)   0%, transparent 55%);
+    }
+    .bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(74,222,128,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74,222,128,.05) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
+      animation: gridPulse 6s ease-in-out infinite alternate;
+    }
+    @keyframes gridPulse {
+      from { opacity: .5; }
+      to   { opacity: 1; }
+    }
+
+    /* Orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      animation: orbDrift ease-in-out infinite alternate;
+    }
+    .orb1 { width: 500px; height: 500px; top: -200px; left: -100px; background: rgba(34,197,94,.12); animation-duration: 10s; }
+    .orb2 { width: 400px; height: 400px; bottom: -150px; right: -100px; background: rgba(22,163,74,.10); animation-duration: 13s; animation-delay: 3s; }
+    .orb3 { width: 280px; height: 280px; top: 40%; left: 55%; background: rgba(74,222,128,.07); animation-duration: 8s; animation-delay: 1s; }
+    @keyframes orbDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(20px, 30px) scale(1.08); }
+    }
+
+    /* Rising particles */
+    .ptcl {
+      position: fixed;
+      bottom: -10px;
+      border-radius: 50%;
+      background: rgba(74,222,128,.18);
+      pointer-events: none;
+      z-index: 0;
+      animation: rise linear infinite;
+    }
+    @keyframes rise {
+      0%   { transform: translateY(0)   scale(1);  opacity: 0; }
+      10%  { opacity: .9; }
+      90%  { opacity: .3; }
+      100% { transform: translateY(-105vh) scale(.2); opacity: 0; }
+    }
+
+    /* ── NAVBAR ────────────────────────────── */
+    .navbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 4%;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(12px);
+      background: rgba(5,46,22,.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--g500), var(--g800));
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 14px rgba(34,197,94,.35);
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.02em;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: .6rem; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.6);
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: .42rem .95rem;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all .2s var(--ease);
+    }
+    .back-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; transition: transform .2s; }
+    .back-btn:hover { color: var(--g300); background: rgba(255,255,255,.13); border-color: rgba(134,239,172,.25); }
+    .back-btn:hover svg { transform: translateX(-3px); }
+
+    .register-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--g900);
+      background: var(--g400);
+      border: none;
+      padding: .45rem 1.1rem;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all .2s var(--bounce);
+      box-shadow: 0 2px 10px rgba(74,222,128,.3);
+    }
+    .register-nav-btn:hover { background: var(--g300); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(74,222,128,.4); }
+
+    /* ── MAIN CONTENT ──────────────────────── */
+    .main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1rem 4rem;
+    }
+
+    /* ── FORM PANEL ────────────────────────── */
+    .form-panel {
+      width: 100%;
+      max-width: 440px;
+      animation: panelIn .55s var(--ease) both;
+    }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* Portal badge */
+    .portal-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--g400);
+      background: rgba(74,222,128,.1);
+      border: 1px solid rgba(74,222,128,.22);
+      padding: .3rem .85rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--g400);
+      box-shadow: 0 0 7px var(--g400);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+
+    .form-title {
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -.04em;
+      line-height: 1.1;
+      margin-bottom: .5rem;
+    }
+    .form-sub {
+      font-size: .9rem;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 2.2rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    /* ── FORM ──────────────────────────────── */
+    .auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+
+    .field-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.6);
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    .forgot {
+      font-size: .76rem;
+      font-weight: 500;
+      color: var(--g400);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .forgot:hover { color: var(--g300); }
+
+    /* Input wrap */
+    .inp-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,.06);
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      transition: border-color .2s var(--ease), box-shadow .2s var(--ease), background .2s;
+      overflow: hidden;
+    }
+    .inp-wrap:hover:not(.focused):not(.has-err) {
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.09);
+    }
+    .inp-wrap.focused {
+      border-color: var(--g500);
+      background: rgba(34,197,94,.07);
+      box-shadow: 0 0 0 3.5px rgba(34,197,94,.18), 0 4px 20px rgba(0,0,0,.2);
+    }
+    .inp-wrap.has-err {
+      border-color: #f87171;
+      background: rgba(248,113,113,.07);
+      box-shadow: 0 0 0 3px rgba(248,113,113,.15);
+    }
+
+    .inp-icon {
+      padding: 0 .55rem 0 1rem;
+      display: flex; align-items: center;
+      color: rgba(255,255,255,.25);
+      flex-shrink: 0;
+      pointer-events: none;
+      transition: color .2s;
+    }
+    .inp-icon svg { width: 15px; height: 15px; stroke: currentColor; fill: none; }
+    .inp-wrap.focused .inp-icon { color: var(--g400); }
+    .inp-wrap.has-err .inp-icon  { color: #f87171; }
+
+    .inp-wrap input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: .93rem;
+      font-weight: 400;
+      color: var(--white);
+      padding: .85rem .6rem .85rem 0;
+      outline: none;
+      width: 100%;
+      caret-color: var(--g400);
+    }
+    .inp-wrap input::placeholder { color: rgba(255,255,255,.25); font-size: .87rem; }
+
+    /* Autofill fix */
+    .inp-wrap input:-webkit-autofill,
+    .inp-wrap input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px rgba(5,46,22,.9) inset;
+      -webkit-text-fill-color: var(--white);
+      caret-color: var(--white);
+    }
+
+    /* Eye button */
+    .eye-btn {
+      background: none; border: none;
+      padding: .5rem .9rem;
+      display: flex; align-items: center;
+      color: rgba(255,255,255,.3);
+      cursor: pointer; flex-shrink: 0;
+      transition: color .2s;
+    }
+    .eye-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; display: block; }
+    .eye-btn .eye-off { display: none; }
+    .eye-btn.active .eye-on  { display: none; }
+    .eye-btn.active .eye-off { display: block; }
+    .eye-btn:hover { color: var(--g400); }
+    .eye-btn.active { color: var(--g400); }
+
+    /* Error msg */
+    .field-err {
+      display: none;
+      align-items: center;
+      gap: .3rem;
+      font-size: .72rem;
+      color: #fca5a5;
+      font-weight: 500;
+    }
+    .field-err.show { display: flex; animation: errIn .2s var(--ease); }
+    .field-err svg { width: 11px; height: 11px; stroke: currentColor; fill: none; flex-shrink: 0; }
+    @keyframes errIn { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:none; } }
+
+    /* ── REMEMBER ──────────────────────────── */
+    .remember-row { display: flex; align-items: center; }
+    .chk-label {
+      display: flex; align-items: center; gap: .55rem;
+      cursor: pointer; user-select: none;
+      font-size: .83rem; color: rgba(255,255,255,.5);
+      font-weight: 400;
+    }
+    .chk-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .chkbox {
+      width: 17px; height: 17px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 5px;
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s var(--bounce);
+    }
+    .chk-label input:checked ~ .chkbox {
+      background: var(--g600);
+      border-color: var(--g500);
+      transform: scale(1.1);
+      box-shadow: 0 2px 10px rgba(34,197,94,.35);
+    }
+    .chkbox::after {
+      content: '';
+      width: 9px; height: 5px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg) translateY(-1px);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .chk-label input:checked ~ .chkbox::after { opacity: 1; }
+
+    /* ── SUBMIT ────────────────────────────── */
+    .submit-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      padding: 1rem 1.5rem;
+      background: linear-gradient(135deg, var(--g500) 0%, var(--g700) 100%);
+      color: var(--white);
+      font-family: var(--font);
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .01em;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s var(--bounce), box-shadow .2s, opacity .2s;
+      box-shadow: 0 6px 28px rgba(22,163,74,.4), 0 1px 0 rgba(255,255,255,.12) inset;
+      margin-top: .3rem;
+    }
+    /* Shine sweep */
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+      transition: left .6s var(--ease);
+      pointer-events: none;
+    }
+    .submit-btn:hover::before { left: 160%; }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(22,163,74,.55), 0 1px 0 rgba(255,255,255,.12) inset;
+    }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn.loading { opacity: .7; pointer-events: none; }
+    .submit-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; transition: transform .2s; }
+    .submit-btn:hover svg { transform: translateX(4px); }
+
+    .spin {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: rotate .7s linear infinite;
+      display: none;
+    }
+    .submit-btn.loading .spin { display: block; }
+    .submit-btn.loading .btn-txt,
+    .submit-btn.loading .btn-ico { display: none; }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    /* ── DIVIDER ───────────────────────────── */
+    .divider {
+      display: flex; align-items: center; gap: .75rem;
+      margin: 1.5rem 0 .5rem;
+      color: rgba(255,255,255,.18); font-size: .74rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,.1);
+    }
+
+    /* ── REGISTER LINK ─────────────────────── */
+    .reg-row {
+      text-align: center;
+      font-size: .87rem;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 1.2rem;
+    }
+    .reg-row a {
+      color: var(--g400);
+      font-weight: 700;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .reg-row a:hover { color: var(--g300); }
+
+    /* ── OTHER PORTALS ─────────────────────── */
+    .portals-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      flex-wrap: wrap;
+    }
+    .portals-label {
+      font-size: .75rem;
+      color: rgba(255,255,255,.3);
+      font-weight: 500;
+    }
+    .portal-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      font-size: .78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.65);
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      padding: .38rem .85rem;
+      border-radius: 100px;
+      text-decoration: none;
+      backdrop-filter: blur(6px);
+      transition: all .2s var(--ease);
+    }
+    .portal-btn:hover {
+      background: rgba(74,222,128,.15);
+      border-color: rgba(74,222,128,.3);
+      color: var(--g300);
+      transform: translateY(-1px);
+    }
+
+    /* ── SECURE NOTE ───────────────────────── */
+    .secure-note {
+      display: flex; align-items: center; justify-content: center; gap: .4rem;
+      font-size: .7rem; color: rgba(255,255,255,.2);
+      margin-top: 1.4rem;
+    }
+    .secure-note svg { width: 11px; height: 11px; stroke: var(--g700); fill: none; }
+
+    /* ── RESPONSIVE ────────────────────────── */
+    @media (max-width: 500px) {
+      .navbar { padding: 1rem 5%; }
+      .brand-name { font-size: 1rem; }
+      .register-nav-btn { display: none; }
+      .main { padding: 2rem 1.2rem 3.5rem; }
+      .form-title { font-size: 2rem; }
+    }
+    @media (max-width: 360px) {
+      .form-title { font-size: 1.7rem; }
+      .submit-btn { font-size: .9rem; padding: .88rem; }
+    }
+    @media (max-height: 600px) and (orientation: landscape) {
+      .main { padding: 1.5rem 1rem 2rem; }
+      .form-sub { margin-bottom: 1.4rem; }
+      .auth-form { gap: .8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BG layers -->
+  <div class="bg-layer"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <!-- Particles -->
+  <div class="ptcl" style="left:8%;  width:5px;height:5px; animation-duration:13s;animation-delay:0s;"></div>
+  <div class="ptcl" style="left:22%; width:3px;height:3px; animation-duration:17s;animation-delay:2s;"></div>
+  <div class="ptcl" style="left:45%; width:7px;height:7px; animation-duration:11s;animation-delay:5s;"></div>
+  <div class="ptcl" style="left:68%; width:4px;height:4px; animation-duration:15s;animation-delay:1s;"></div>
+  <div class="ptcl" style="left:85%; width:6px;height:6px; animation-duration:9s; animation-delay:3.5s;"></div>
+  <div class="ptcl" style="left:55%; width:3px;height:3px; animation-duration:20s;animation-delay:7s;"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="brand">
+      <div class="brand-icon">♻</div>
+      <span class="brand-name">SmartBin Connect</span>
+    </a>
+    <div class="nav-right">
+      <a href="index.html" class="back-btn">
+        <svg viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to Home
+      </a>
+      <a href="register.html" class="register-nav-btn">Create Account →</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="form-panel">
+
+      <div class="portal-badge">
+        <span class="badge-dot"></span>
+        User Portal
+      </div>
+
+      <h1 class="form-title">Welcome back 👋</h1>
+      <p class="form-sub">Sign in to request and track your waste pickups in real time.</p>
+
+      <form class="auth-form" id="loginForm" action="backend/login.php" method="POST" novalidate>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Email Address</label>
+          <div class="inp-wrap" id="emailWrap">
+            <span class="inp-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </span>
+            <input type="email" id="email" name="email"
+                   placeholder="you@example.com"
+                   autocomplete="email" inputmode="email" required>
+          </div>
+          <div class="field-err" id="emailErr">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Enter a valid email address.
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <div class="field-top">
+            <label for="password">Password</label>
+            <a href="forgot-password.html" class="forgot">Forgot password?</a>
+          </div>
+          <div class="inp-wrap" id="passWrap">
+            <span class="inp-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </span>
+            <input type="password" id="password" name="password"
+                   placeholder="Enter your password"
+                   autocomplete="current-password" required>
+            <button type="button" class="eye-btn" id="eyeBtn" aria-label="Toggle password visibility">
+              <svg class="eye-on" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="eye-off" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <div class="field-err" id="passErr">
+            <svg viewBox="0 0 24 24" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <!-- Remember -->
+        <div class="remember-row">
+          <label class="chk-label">
+            <input type="checkbox" name="remember" id="remember">
+            <span class="chkbox"></span>
+            Keep me signed in for 30 days
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="subBtn">
+          <div class="spin"></div>
+          <span class="btn-txt">Sign In</span>
+          <svg class="btn-ico" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+
+      </form>
+
+      <div class="divider"><span>or</span></div>
+
+      <p class="reg-row">
+        Don't have an account? <a href="register.html">Create one for free →</a>
+      </p>
+
+     
+
+      <p class="secure-note">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        256-bit SSL encryption · Your data is always secure
+      </p>
+
+    </div>
+  </main>
+
+  <script>
+    // Password toggle
+    const eyeBtn  = document.getElementById('eyeBtn');
+    const passInp = document.getElementById('password');
+    eyeBtn.addEventListener('click', () => {
+      const show = passInp.type === 'password';
+      passInp.type = show ? 'text' : 'password';
+      eyeBtn.classList.toggle('active', show);
+      passInp.focus();
+    });
+
+    // Focus rings
+    document.querySelectorAll('.inp-wrap input').forEach(inp => {
+      const w = inp.closest('.inp-wrap');
+      inp.addEventListener('focus', () => w.classList.add('focused'));
+      inp.addEventListener('blur',  () => w.classList.remove('focused'));
+    });
+
+    // Validation
+    const emailInp  = document.getElementById('email');
+    const emailWrap = document.getElementById('emailWrap');
+    const passWrap  = document.getElementById('passWrap');
+    const emailErr  = document.getElementById('emailErr');
+    const passErr   = document.getElementById('passErr');
+    const subBtn    = document.getElementById('subBtn');
+    const form      = document.getElementById('loginForm');
+
+    const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+    emailInp.addEventListener('input', () => {
+      if (isEmail(emailInp.value)) {
+        emailWrap.classList.remove('has-err');
+        emailErr.classList.remove('show');
+      }
+    });
+    passInp.addEventListener('input', () => {
+      if (passInp.value.length >= 6) {
+        passWrap.classList.remove('has-err');
+        passErr.classList.remove('show');
+      }
+    });
+
+    form.addEventListener('submit', e => {
+      let ok = true;
+      if (!isEmail(emailInp.value)) {
+        emailWrap.classList.add('has-err'); emailErr.classList.add('show'); ok = false;
+      }
+      if (passInp.value.length < 6) {
+        passWrap.classList.add('has-err'); passErr.classList.add('show'); ok = false;
+      }
+      if (!ok) { e.preventDefault(); return; }
+      subBtn.classList.add('loading');
+    });
+  </script>
+
+</body>
+</html>

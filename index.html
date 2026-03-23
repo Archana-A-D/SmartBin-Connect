@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Waste Collection System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="navbar" id="navbar">
+    <div class="logo">
+        <span class="logo-icon">♻</span>
+        SmartBin Connect
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+    </button>
+    <nav id="nav-menu">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#modules">Modules</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#contact">Contact</a>
+        <div class="nav-btns">
+            <a href="login.html"><button class="login-btn">User Login</button></a>
+            <a href="collector-login.html"><button class="login-btn outline">Collector</button></a>
+            <a href="admin-login.php"><button class="login-btn outline">Admin</button></a>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <div class="hero-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge">Eco-Smart Platform</div>
+            <h1>On-Demand Smart<br><span class="highlight">Waste Collection</span></h1>
+            <p>A cloud-based solution for efficient, eco-friendly, and real-time waste collection. Request pickup only when needed and keep your surroundings clean.</p>
+            <div class="hero-buttons">
+                <a href="register.html"><button class="primary-btn">Get Started Free</button></a>
+                <a href="#features"><button class="ghost-btn">Learn More ↓</button></a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><strong>40%</strong><span>Less Fuel Used</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat"><strong>3x</strong><span>Faster Pickup</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat"><strong>99%</strong><span>Satisfaction</span></div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="image-card">
+                <img src="https://cdn-icons-png.flaticon.com/512/2917/2917995.png" alt="Waste Collection">
+                <div class="floating-badge badge-1">Live Tracking</div>
+                <div class="floating-badge badge-2">Pickup Done</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features" id="features">
+    <div class="section-header">
+        <span class="section-tag">FEATURES</span>
+        <h2>Everything You Need</h2>
+        <p>Powerful tools for smarter, cleaner communities</p>
+    </div>
+    <div class="feature-cards">
+        <div class="card">
+            <div class="card-icon">🗑️</div>
+            <h3>On-Demand Pickup</h3>
+            <p>Request waste collection only when your bin is full. No more fixed schedules.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">📡</div>
+            <h3>Real-Time Tracking</h3>
+            <p>Track your pickup status from request to completion on a live map.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🔔</div>
+            <h3>Truck Near Alert</h3>
+            <p>Get instant notifications before the collection truck arrives at your door.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🗺️</div>
+            <h3>Route Optimization</h3>
+            <p>AI-powered shortest route planning for collectors saves time and fuel.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">📊</div>
+            <h3>Analytics Dashboard</h3>
+            <p>Admins get detailed insights on collections, performance, and ward health.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🌍</div>
+            <h3>Eco Reporting</h3>
+            <p>Track your environmental impact with monthly eco-footprint reports.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Modules -->
+<section class="modules" id="modules">
+    <div class="section-header light">
+        <span class="section-tag">MODULES</span>
+        <h2>System Modules</h2>
+        <p>Three connected portals built around the latest SmartWaste workflow</p>
+    </div>
+    <div class="module-box">
+        <div class="module user">
+            <div class="module-header">
+                <div class="module-icon">👤</div>
+                <h3>User Module</h3>
+            </div>
+            <ul>
+                <li><span>📥</span> Request pickup on demand</li>
+                <li><span>📍</span> Track pickup, batch, and request status</li>
+                <li><span>🔔</span> Receive truck alerts and reschedule notices</li>
+                <li><span>⏭</span> Mark yourself unavailable when needed</li>
+                <li><span>📜</span> Manage profile details and pickup history</li>
+            </ul>
+            <a href="register.html" class="module-btn">Get Started →</a>
+        </div>
+        <div class="module collector featured">
+            <div class="module-badge">Most Used</div>
+            <div class="module-header">
+                <div class="module-icon">🚛</div>
+                <h3>Collector Module</h3>
+            </div>
+            <ul>
+                <li><span>📌</span> Ward-based access control</li>
+                <li><span>📦</span> Create batches of up to 15 queued requests</li>
+                <li><span>🗺️</span> Generate optimized pickup routes</li>
+                <li><span>📅</span> Set pickup dates and notify all affected users</li>
+                <li><span>✅</span> Reschedule or complete pickups with live ward updates</li>
+            </ul>
+            <a href="collector-login.html" class="module-btn">Collector Login →</a>
+        </div>
+        <div class="module admin">
+            <div class="module-header">
+                <div class="module-icon">🛡️</div>
+                <h3>Admin Module</h3>
+            </div>
+            <ul>
+                <li><span>🏘️</span> Monitor requests ward by ward</li>
+                <li><span>📊</span> Review stats, waste trends, and ward summaries</li>
+                <li><span>🚨</span> Send overdue alerts to collectors</li>
+                <li><span>🔔</span> Receive collector and system notifications</li>
+                <li><span>🔗</span> Oversee collection flow across the system</li>
+            </ul>
+            <a href="admin-login.php" class="module-btn">Admin Login →</a>
+        </div>
+    </div>
+</section>
+
+<!-- Benefits -->
+<section class="benefits" id="benefits">
+    <div class="section-header">
+        <span class="section-tag">BENEFITS</span>
+        <h2>Why Choose SmartWaste?</h2>
+        <p>Making cities cleaner, one smart pickup at a time</p>
+    </div>
+    <div class="benefits-grid">
+        <div class="benefit-item">
+            <div class="benefit-icon">⛽</div>
+            <h4>Saves Fuel & Cost</h4>
+            <p>Optimized routes reduce fuel consumption by up to 40% compared to fixed schedule systems.</p>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon">⏱️</div>
+            <h4>Saves Time</h4>
+            <p>Collectors only visit when needed. No wasted trips, maximum efficiency every single day.</p>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon">🌱</div>
+            <h4>Eco-Friendly</h4>
+            <p>Fewer trips mean lower carbon emissions, helping your city meet environmental goals.</p>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon">🤝</div>
+            <h4>Citizen Participation</h4>
+            <p>Empowers residents to be active participants in keeping their neighborhoods clean.</p>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon">🏙️</div>
+            <h4>Cleaner Cities</h4>
+            <p>On-demand pickups mean bins never overflow, resulting in consistently cleaner streets.</p>
+        </div>
+        <div class="benefit-item">
+            <div class="benefit-icon">📱</div>
+            <h4>Easy to Use</h4>
+            <p>A simple, intuitive interface accessible from any device with no training needed.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>Ready to Make Your City Cleaner?</h2>
+        <p>Join thousands of residents already using SmartWaste for a greener tomorrow.</p>
+        <a href="register.html"><button class="primary-btn large">Start for Free Today</button></a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer id="contact">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <div class="logo"><span class="logo-icon">♻</span> SmartBin Connect</div>
+            <p>A smarter way to manage waste collection for modern cities and communities.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Quick Links</h4>
+            <a href="#home">Home</a>
+            <a href="#features">Features</a>
+            <a href="#modules">Modules</a>
+            <a href="#benefits">Benefits</a>
+        </div>
+        <div class="footer-links">
+            <h4>Portals</h4>
+            <a href="login.html">User Login</a>
+            <a href="collector-login.html">Collector Login</a>
+            <a href="admin-login.php">Admin Login</a>
+            <a href="register.html">Register</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2026 Smart Waste Collection System &nbsp;|&nbsp; Academic Project</p>
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    hamburger.addEventListener('click', () => {
+        hamburger.classList.toggle('active');
+        navMenu.classList.toggle('open');
+    });
+
+    document.querySelectorAll('#nav-menu a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navMenu.classList.remove('open');
+        });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .module, .benefit-item').forEach(el => {
+        el.classList.add('animate-in');
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>
